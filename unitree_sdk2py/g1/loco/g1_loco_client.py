@@ -30,6 +30,17 @@ class LocoClient(Client):
         self._RegistApi(ROBOT_API_ID_LOCO_SET_VELOCITY, 0)
         self._RegistApi(ROBOT_API_ID_LOCO_SET_ARM_TASK, 0)
 
+        # 7001
+    def GetFsmId(self):
+        p = {}
+        parameter = json.dumps(p)
+        code, data = self._Call(ROBOT_API_ID_LOCO_GET_FSM_ID, parameter)
+        if code == 0:
+            data = json.loads(data)
+            return data["data"]
+        else:
+            return None
+
     # 7101
     def SetFsmId(self, fsm_id: int):
         p = {}
@@ -63,7 +74,7 @@ class LocoClient(Client):
         parameter = json.dumps(p)
         code, data = self._Call(ROBOT_API_ID_LOCO_SET_VELOCITY, parameter)
         return code
-    
+
     # 7106
     def SetTaskId(self, task_id: float):
         p = {}
@@ -74,9 +85,12 @@ class LocoClient(Client):
 
     def Damp(self):
         self.SetFsmId(1)
-    
+
     def Start(self):
         self.SetFsmId(200)
+
+    def NormalStart(self):
+        self.SetFsmId(501)
 
     def Squat2StandUp(self):
         self.SetFsmId(706)
@@ -84,8 +98,14 @@ class LocoClient(Client):
     def Lie2StandUp(self):
         self.SetFsmId(702)
 
+    def Squat(self):
+        self.SetFsmId(2)
+
     def Sit(self):
         self.SetFsmId(3)
+
+    def StandUp(self):
+        self.SetFsmId(4)
 
     def StandUp2Squat(self):
         self.SetFsmId(706)
@@ -124,4 +144,3 @@ class LocoClient(Client):
         else:
             self.first_shake_hand_stage_ = not self.first_shake_hand_stage_
             return self.SetTaskId(3 if self.first_shake_hand_stage_ else 2)
-    
